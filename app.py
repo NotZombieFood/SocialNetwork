@@ -17,6 +17,13 @@ for example_user in example_users:
 def users():
     return render_template('users.html',users=graph.getNodes())
 
+@app.route('/register')
+def register():
+    name = request.args.get("name")
+    node = Node(name)
+    graph.add(node)
+    return node.id
+
 @app.route('/user/<user>')
 def user(user):
     user_object = graph.getNode(user)

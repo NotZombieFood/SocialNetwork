@@ -9,3 +9,28 @@ textarea:focus,
 button:focus {
   outline: none;
 }
+
+#users{
+  padding: 50px;
+}
+
+#user h1{
+  margin-bottom: 35px;
+}
+
+#user .user{
+  background-color: #ccdef3;
+  width: 100%;
+  line-height: 50px;
+  display: block;
+  height: 50px;
+  text-align: center;
+  color: white;
+  transition: all 1s;
+}
+
+#user .user:hover{
+  text-decoration: none;
+  color: white;
+  background-color: #3a94fa;
+}
