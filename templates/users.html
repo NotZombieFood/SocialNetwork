@@ -7,7 +7,7 @@
             <div class="col-md-12 text-center">
                 <h1>Users</h1>
             </div>
-            {% for user in  users %}
+            {% for user in users %}
             <div class="col-md-3">
                 <a class="user" href="/user/{{user.id}}">{{user.name}}</a>
             </div>
@@ -18,8 +18,45 @@
 <section id="register">
     <div class="container">
         <div class="row">
-            
+            <div class="col-md-12 text-center">
+                <h1>Register</h1>
+                <input type="text" id="user_name">
+                <button id="send">Send</button>
+            </div>
         </div>
     </div>
 </section>
+<script>
+    window.onload = function () {
+        $("#send").click(function () {
+            console.log("picado");
+            var name = $("#user_name").val();
+            console.log(name);
+            $.ajax({
+                url: "http://127.0.0.1:5000/register?name=" + name,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST', // For jQuery < 1.9
+                success: function (data) {
+                    if (data === "ERROR") {
+                        error("Please write a name");
+                    } else {
+                        message("User has been created, wait a second...");
+                        var delayInMilliseconds = 1000; //1 second
+                        setTimeout(function () {
+                            url_response = "http://127.0.0.1:5000/user/" + data;
+                            window.location.replace(url_response);
+                        }, delayInMilliseconds);
+                    }
+                },
+                failure: function (data) {
+                    error("Fatal error on API");
+                    console.log(data);
+                }
+            });
+        });
+    };
+</script>
 {% endblock %}

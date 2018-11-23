@@ -10,26 +10,62 @@ button:focus {
   outline: none;
 }
 
-#users{
-  padding: 50px;
+#users,#user{
+  padding: 50px 0px;
 }
 
-#user h1{
+#users h1{
   margin-bottom: 35px;
 }
+#user .header{
+  background-color: #3a94fa;
+  color: white;
+  font-weight: bolder;
+}
+#user .delete{
+  background-color: rgb(255, 142, 142);
+  color: white;
+  font-weight: bolder;
+  transition: all 1s;
+}
 
-#user .user{
+#user .delete:hover{
+  text-decoration: none;
+  background-color: rgb(253, 0, 0);
+  cursor: pointer;
+}
+
+#user .request{
+  color: #3a94fa;
+  transition: all 1s;
+}
+
+#user .request:hover{
+  background-color: greenyellow;
+}
+#user .header h2, #user .delete h2{
+  font-size: 3rem !important;
+}
+#user .friends{
+  color: #3a94fa;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+}
+
+#users .user{
   background-color: #ccdef3;
   width: 100%;
   line-height: 50px;
   display: block;
   height: 50px;
+  margin: 20px 0px;
   text-align: center;
   color: white;
   transition: all 1s;
 }
 
-#user .user:hover{
+#users .user:hover{
   text-decoration: none;
   color: white;
   background-color: #3a94fa;

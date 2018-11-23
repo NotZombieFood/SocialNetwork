@@ -1,13 +1,106 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section id="section_form">
+<section id="user">
     <div class="container">
         <div class="row">
             <div class="col-md-12 text-center">
                 <h1>Welcome {{user.name}}</h1>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="header">
+                    <h2>Friends</h2>
+                </div>
+                {% for friend in friends %}
+                <div class="friends">
+                    <h2>{{friend.name}}</h2>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                <div class="header">
+                    <h2>Search</h2>
+                </div>
+                <input type="text" id="search">
+                <div class="results">
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="header">
+                    <h2>Friend Requests</h2>
+                </div>
+                {% for request in requests %}
+                <div class="request" data-user="{{user.id}}" data-sender="{{request.id}}">
+                    <h2>{{request.name}}</h2>
+                </div>
+                {% endfor %}
+                <div class="delete" data-user="{{user.id}}">
+                    <h2>Delete Account</h2>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+<script>
+    window.onload = function () {
+        $(".delete").click(function () {
+            console.log("picado");
+            var id = $(this).data("user");
+            console.log(id);
+            $.ajax({
+                url: "http://127.0.0.1:5000/delete?id=" + id,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST', // For jQuery < 1.9
+                success: function (data) {
+                    if (data === "ERROR") {
+                        error("cant be errased");
+                    } else {
+                        message("User has been erased...");
+                        var delayInMilliseconds = 1000; //1 second
+                        setTimeout(function () {
+                            url_response = "http://127.0.0.1:5000/users";
+                            window.location.replace(url_response);
+                        }, delayInMilliseconds);
+                    }
+                },
+                failure: function (data) {
+                    error("Fatal error on API");
+                    console.log(data);
+                }
+            });
+        });
+        $(".request").click(function () {
+            console.log("picado");
+            var id = $(this).data("user");
+            console.log(id);
+            var sender = $(this).data("sender");
+            $.ajax({
+                url: "http://127.0.0.1:5000/accept?recipient=" + id + "&sender=" + sender,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST', // For jQuery < 1.9
+                success: function (data) {
+                    if (data === "ERROR") {
+                        error("cant be added");
+                    } else {
+                        message("User has been added...");
+                        $(this).remove();
+                    }
+                },
+                failure: function (data) {
+                    error("Fatal error on API");
+                    console.log(data);
+                }
+            });
+        });
+    };
+</script>
 {% endblock %}
