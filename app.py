@@ -8,9 +8,12 @@ from structure import Node, Graph
 app = Flask(__name__)
 
 graph = Graph()
+nodes = []
 example_users = ["Antonio Pedrero", "Miguel Triana", "Gerardo Cruz", "Mariana Lopez", "Fernanda Gonzalez"]
 for example_user in example_users:
-    graph.add(Node(example_user))
+    node = Node(example_user)
+    nodes.append(node)
+    graph.add(node)
 
 graph.randomConnections()
 
@@ -57,6 +60,51 @@ def delete():
         node = graph.getNode(id)
         graph.delete(node)
         return "done"
+    else:
+        return "ERROR"
+
+@app.route('/search', methods=['POST'])
+def search():
+    """
+        This request is a post, wont be accesible via browser, more of a API type of call
+        Description: search a user
+        Param: sender, recipient
+        return none
+    """
+    user_id = request.args.get("id")
+    name = request.args.get("name")
+    if user_id and name:
+        user_object = graph.getNode(user_id)
+        if graph.connections(user_object) == []:
+            element = graph.linearSearch(user_object,name)
+            return str({"user":element.id, "name":element.name})
+        else:
+            element = graph.bfs_path(user_object.name,name)
+            if element:
+                response_object = graph.getByName(element[-1])
+                return str({"user":response_object.id, "name":response_object.name})
+            else:
+                return "ERROR"
+    else:
+        return "ERROR"
+
+@app.route('/request', methods=['POST'])
+def requestAPI():
+    """
+        This request is a post, wont be accesible via browser, more of a API type of call
+        Description: request a user
+        Param: sender, recipient
+        return none
+    """
+    sender = request.args.get("sender")
+    recipient = request.args.get("recipient")
+    if sender and recipient:
+        sender_node = graph.getNode(sender)
+        recipient_node = graph.getNode(recipient)
+        if (graph.sendRequest(sender_node,recipient_node)):
+            return "done"
+        else:
+            return "ERROR"
     else:
         return "ERROR"
 

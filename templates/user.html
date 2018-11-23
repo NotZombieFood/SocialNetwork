@@ -23,9 +23,10 @@
                 <div class="header">
                     <h2>Search</h2>
                 </div>
-                <input type="text" id="search">
+                <input type="text" id="search" placeholder="name">
+                <button data-user="{{user.id}}" id="search_button">Search</button>
                 <div class="results">
-
+                   
                 </div>
             </div>
             <div class="col-md-4">
@@ -45,7 +46,55 @@
     </div>
 </section>
 <script>
+    function solicitud(user, recipient){
+        $.ajax({
+                url: "http://127.0.0.1:5000/request?sender=" + user + "&recipient=" + recipient,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST', // For jQuery < 1.9
+                success: function (data) {
+                    if (data === "ERROR") {
+                        error("maybe you are friends or have send the request before");
+                    } else {
+                        message("Frienship request has been sent...");
+                    }
+                },
+                failure: function (data) {
+                    error("Fatal error on API");
+                    console.log(data);
+                }
+            });
+    }
     window.onload = function () {
+        
+        $("#search_button").click(function () {
+            var name = $("#search").val();
+            var id = $(this).data("user");
+            console.log(name);
+            $.ajax({
+                url: "http://127.0.0.1:5000/search?id=" + id + "&name=" + name,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST', // For jQuery < 1.9
+                success: function (data) {
+                    if (data === "ERROR") {
+                        error("No match found");
+                    } else {
+                        message("User has been found...");
+                        var a = JSON.parse(data.replace(/'/g, '"'));
+                        $(".results").html('<h2 onClick="solicitud('+$("#search_button").data("user")+','+ a["user"] +')" data-user="'+ $("#search_button").data("user")+ '" data-recipient="'+a["user"] +'" >'+ a["name"] + '</h2>');
+                    }
+                },
+                failure: function (data) {
+                    error("Fatal error on API");
+                    console.log(data);
+                }
+            });
+        });
         $(".delete").click(function () {
             console.log("picado");
             var id = $(this).data("user");

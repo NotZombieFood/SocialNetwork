@@ -78,6 +78,16 @@ class Graph:
             if element.id == int(id):
                 return element
         return False
+    def getByName(self,name):
+        """
+            Description: Get the node object which has the name received
+            Params: name as a string (the way flask is sending it)
+            Return: False if not found and the object if found
+        """
+        for element in self._graph:
+            if element.name == name:
+                return element
+        return False
     def getNodes(self):
         """
             Description: Get all nodes objects
@@ -96,8 +106,10 @@ class Graph:
         if sender_node != recipient_node and self._nodeExists(sender_node) and self._nodeExists(recipient_node) and recipient_node not in self._sentRequests[sender_node] and sender_node not in self._pendingRequests[recipient_node] and sender_node not in self._graph[recipient_node]:
             self._pendingRequests[recipient_node].append(sender_node)
             self._sentRequests[sender_node].append(recipient_node)
+            return True
         else:
             print("one node doesnt exist or have been send before")
+            return False
     def acceptRequest(self, sender_node, recipient_node):
         """
             Description: send a friend request, writes both dicts
@@ -178,12 +190,24 @@ class Graph:
             if name == element.name:
                 return element
         return None #returned when the name is not found
-    def bfs(self, node, name):
-        seen, queue = set([node]), collections.deque([node])
+    def obtainSet(self):
+        dictionary = {}
+        for element in self._graph:
+            array = []
+            for subelement in self._graph[element]:
+                array.append(subelement.name)
+            dictionary[element.name] = set(array)
+        return dictionary
+    def bfs_path(self, start, goal):
+        """ Heavily inspired by:    
+            https://eddmann.com/posts/depth-first-search-and-breadth-first-search-in-python/
+        """
+        set_graph = self.obtainSet()
+        queue = [(start, [start])] #the queue begins with the name of the user
         while queue:
-            vertex = queue.popleft()
-            for node in graph[vertex]:
-                if node not in seen:
-                    seen.add(node)
-                    queue.append(node)
-
+            (vertex, path) = queue.pop(0) #let the vertex be the last one search in and path be the where we have been
+            for next in set_graph[vertex] - set(path): #dont count the old path
+                if next == goal: #we find our goal
+                    return path + [next]
+                else:
+                    queue.append((next, path + [next])) #the one we seached is on the queue, plus an array with the previous visits and the last one
